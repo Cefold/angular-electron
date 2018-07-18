@@ -37,7 +37,8 @@
     "e2e": "npm run postinstall:web && ng e2e"
   },
   "dependencies": {
-    "electron-log": "^2.2.16"
+    "electron-log": "^2.2.16",
+    "express": "^4.16.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "0.6.3",

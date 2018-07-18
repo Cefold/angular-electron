@@ -1,6 +1,7 @@
 import { app, BrowserWindow, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import * as logger from 'electron-log';
 
 let win, serve;
 const args = process.argv.slice(1);
@@ -70,3 +71,46 @@ try {
   // Catch Error
   // throw e;
 }
+
+
+
+const {
+  spawn,
+  execFile,
+  fork,
+  exec
+} = require('child_process')
+
+const rootFolder = process.env.NODE_ENV === 'development'
+  ? process.cwd()
+  : path.join(__dirname, '.')
+
+var executableFolder = path.join(__dirname, '../resources')
+
+
+var child = spawn("node", ['server/server.js'],{
+  cwd: rootFolder,
+  detached: false
+}) 
+
+
+
+child.stdout.on('data', (data) => {
+  console.log(`child stdout:\n${data}`)
+  
+})
+
+child.stderr.on('data', (data) => {
+  console.error(`child stderr:\n${data}`)
+})
+
+
+child.on('exit', function (code, signal) {
+  logger.warn('child process exited with ' +
+    `code ${code} and signal ${signal}`)
+}) 
+
+setInterval(() => {
+  child.stdin.write('11 this is my res');
+  // child.stdin.end();
+}, 2000)
