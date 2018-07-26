@@ -2,6 +2,7 @@ import { app, BrowserWindow, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import * as logger from 'electron-log';
+import * as os from 'os';
 
 let win, serve;
 const args = process.argv.slice(1);
@@ -87,30 +88,48 @@ const rootFolder = process.env.NODE_ENV === 'development'
 
 var executableFolder = path.join(__dirname, '../resources')
 
+var child
 
-var child = spawn("node", ['server/server.js'],{
-  cwd: rootFolder,
-  detached: false
-}) 
+startBackend()
 
 
 
-child.stdout.on('data', (data) => {
-  console.log(`child stdout:\n${data}`)
-  
-})
+function startBackend() {
+  if (serve) {
+    child = spawn('node', ['server/server.js', '--electron'], {
+      cwd: process.cwd()
+      // cwd : path.join(__dirname, '../')
+    })
 
-child.stderr.on('data', (data) => {
-  console.error(`child stderr:\n${data}`)
-})
+    child.stdout.on('data', (data) => {
+      logger.info('[main]', 'child stdout:', `\n${data}`)
+    })
+    
+    child.stderr.on('data', (data) => {
+      logger.info('[main]', 'child stderr:', `\n${data}`)
+    })
+    
+    child.on('exit', function (code, signal) {
+      logger.info('[main]', 'child exit:', `code ${code} and signal ${signal}`)
+    })
+    
+    setInterval(() => {
+      child.stdin.write('this is my res');
+      // child.stdin.end();
+    }, 2000)
+  } else {
+    // child = execFile("1hkg_new_1.exe", [], {
+    //   cwd: executableFolder
+    // })  
+  }
+}
 
 
-child.on('exit', function (code, signal) {
-  logger.warn('child process exited with ' +
-    `code ${code} and signal ${signal}`)
-}) 
-
-setInterval(() => {
-  child.stdin.write('11 this is my res');
-  // child.stdin.end();
-}, 2000)
+function terminateBackend() {
+  const hostdir = os.homedir();
+  if (os.platform() == 'win32') {
+    
+  } else if (serve) {
+    child.kill();
+  }
+}

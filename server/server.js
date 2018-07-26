@@ -6,30 +6,27 @@ const http = require('http')
 const https = require('https')
 
 const logger = require('electron-log')
+const args = process.argv.slice(1);
 
-// app.get('/', function (req, res) {
-//   res.sendFile(path.join(__dirname, '/dummy-miner.html'))
-// })
-
-// app.get('/get-miners-status', function (req, res) {
-//   res.json(miners)
-// })
-
-console.log('something...')
-
-
-logger.info('[server]', 'start serving......')
-
-// process.stdin.setEncoding('utf8');
-
-process.stdin.on('readable', () => {
-  const chunk = process.stdin.read();
-  if (chunk !== null) {
-    // process.stdout.write(`data: ${chunk}`);
-    logger.info('[server]', chunk)
-  }
+const electron = args.some(function (val) {
+  return val === '--electron';
 });
 
-// process.stdin.on('data', function (data) {
-//     console.log('Received data: ' + data);
+
+if (electron) {
+  console.log('start server...', '--electron', __dirname)
+} else {
+  console.log('start server...', '', __dirname)
+}
+
+
+// process.stdin.on('readable', () => {
+//   const chunk = process.stdin.read();
+//   if (chunk !== null) {
+//     process.stdout.write(`data: ${chunk}`);
+//   }
 // });
+
+process.stdin.on('data', function (data) {
+    console.log('Received data: ' + data);
+});
