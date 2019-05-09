@@ -18,12 +18,16 @@ function createWindow() {
     x: 0,
     y: 0,
     width: size.width,
-    height: size.height
+    height: size.height,
+    webPreferences: {
+      nodeIntegration: true,
+    },
   });
 
   if (serve) {
     require('electron-reload')(__dirname, {
-     electron: require(`${__dirname}/node_modules/electron`)});
+      electron: require(`${__dirname}/node_modules/electron`)
+    });
     win.loadURL('http://localhost:4200');
   } else {
     win.loadURL(url.format({
@@ -33,7 +37,9 @@ function createWindow() {
     }));
   }
 
-  win.webContents.openDevTools();
+  if (serve) {
+    win.webContents.openDevTools();
+  }
 
   // Emitted when the window is closed.
   win.on('closed', () => {
@@ -42,6 +48,7 @@ function createWindow() {
     // when you should delete the corresponding element.
     win = null;
   });
+
 }
 
 try {
